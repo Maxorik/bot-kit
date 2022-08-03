@@ -1,0 +1,4 @@
+node_modules
+.idea
+credentials.json
+./src/database/users.sqlite3
