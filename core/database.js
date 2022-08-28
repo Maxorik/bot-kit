@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./src/database/users.sqlite3');
+const db = new sqlite3.Database('./users.sqlite3');
 const tableName = 'users';
 
 // добавить нового пользователя в бд
