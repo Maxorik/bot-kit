@@ -14,9 +14,10 @@ const { editedKeyboard, getPreviousItem, addItemToCart, getNextItem } = require(
 
 // базовые команды
 bot.setMyCommands([
-    {command: '/start', description: 'Запуск бота'},
-    {command: '/keys', description: 'Клавиатура'},
-    {command: '/database', description: 'Каталог'},
+    {command: '/start',     description: 'Запуск бота'},
+    {command: '/database',  description: 'Каталог'},
+    {command: '/orders',    description: 'Мои заказы'},
+    {command: '/address',   description: 'Мой адрес'}
 ]);
 
 // TODO сделать функции асинхронными
