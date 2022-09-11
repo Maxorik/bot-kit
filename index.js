@@ -15,7 +15,7 @@ const { editedKeyboard, getPreviousItem, addItemToCart, getNextItem } = require(
 // базовые команды
 bot.setMyCommands([
     {command: '/start',     description: 'Запуск бота'},
-    {command: '/database',  description: 'Каталог'},
+    {command: '/catalog',   description: 'Каталог'},
     {command: '/orders',    description: 'Мои заказы'},
     {command: '/address',   description: 'Мой адрес'}
 ]);
@@ -36,7 +36,20 @@ bot.on('message', msg => {
         bot.sendMessage(chatId, "Hello", testKeyboard);
     }
 
-    if(text === '/database') {
+    if(text === '/catalog') {
+        // TODO GET db
+
+        new Promise((resolve, reject) => {
+            db.getEntryList(resolve, reject, 'products');
+        }).then( (res) => {
+            let userlist = res.map((user, i) => {
+                // let userDate = ext.getDate(new Date(user.date1 * 1000));
+                // return `${i + 1}.   ${user.username},   ${user.first_name},   запуск:  ${userDate}\n`;
+                console.log(user);
+            });
+            // bot.sendMessage(msg.chat.id, "User added");
+        });
+
         bot.sendMessage(chatId, "Здесь будет изменяемый текст. Тыкай кнопки", editedKeyboard);
     }
 });

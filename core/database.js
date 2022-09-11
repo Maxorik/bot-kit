@@ -1,17 +1,16 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./users.sqlite3');
-const tableName = 'users';
+const db = new sqlite3.Database('./core/users.sqlite3');
 
-// добавить нового пользователя в бд
-function addNewUser(payload) {
+// добавить новую запись в бд
+function addNewEntry(payload, tableName, dbKeys) {
     db.serialize(() => {
-        const userId = payload.from.id;
+        const entryId = payload.from.id;
         let sqlGet = `SELECT id FROM ${tableName} WHERE id = ?`;
-        let sqlInsert = `INSERT INTO ${tableName} (id, first_name, username, date1, date2, content, schedule)
+        let sqlInsert = `INSERT INTO ${tableName} (id, first_name, username, date1, date2, content, schedule)    // TODO keys
                                  VALUES ("${payload.from.id}", "${payload.from.first_name}", "${payload.from.username}",
-                                         "${payload.date}", "${payload.date}", "boobs", "work")`;
+                                         "${payload.date}", "${payload.date}")`;
 
-        db.get(sqlGet, [userId], (err, row) => {
+        db.get(sqlGet, [entryId], (err, row) => {
             if(err) {
                 console.log(err)
             }
@@ -23,8 +22,8 @@ function addNewUser(payload) {
     // db.close();
 }
 
-// получить список пользователей
-function getUserList(resolve, reject) {
+// получить список записей таблицы
+function getEntryList(resolve, reject, tableName) {
     db.serialize(() => {
         let recordsList = [];
         db.each(`SELECT * FROM ${tableName}`, (err, row) => {
@@ -36,16 +35,16 @@ function getUserList(resolve, reject) {
     });
 }
 
-// обновить настройки пользователя
-function updateUserSettings(bot, userId, paramName, paramValue) {
+// обновить запись
+function updateEntry(bot, entryId, tableName, paramName, paramValue) {
     db.serialize(() => {
-        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE id = ${userId}`;
+        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE id = ${entryId}`;
 
         // TODO возвращать разное в зав-и от paramName
         db.run(sqlUpdate, (err, row) => {
-            err ? console.log(err) : bot.sendMessage(userId, `Тип контента изменен`);
+            err ? console.log(err) : bot.sendMessage(entryId, `Тип контента изменен`);  // TODO изменить резолв
         });
     });
 }
 
-module.exports = { addNewUser, getUserList, updateUserSettings }
+module.exports = { addNewEntry, getEntryList, updateEntry }

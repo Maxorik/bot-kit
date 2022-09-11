@@ -16,7 +16,7 @@ module.exports = {
     },
 
     updateDataBase: async (bot, chatId, contentType) => {
-        await db.updateUserSettings(bot, chatId, 'content', contentType);
+        await db.updateEntry(bot, chatId, 'content', contentType);
     }
 }
 
