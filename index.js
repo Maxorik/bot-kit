@@ -9,7 +9,7 @@ const db = require('./core/database');
 const ext = require('./core/extended');
 const { testKeyboard } = require('./core/keyboard');
 
-const { editedKeyboard, getPreviousItem, addItemToCart, getNextItem } = require('./core/editedKeyboard')
+const { editedKeyboard, keyboardActivate, getPreviousItem, addItemToCart, getNextItem } = require('./core/editedKeyboard')
 
 
 // базовые команды
@@ -26,30 +26,19 @@ bot.on('message', msg => {
     const text = msg.text;
 
     if(text === '/start' || text === '/start s') {
+        // TODO просто добавить пользователя в дб
         // записываем пользователя в БД
         // db.addNewUser(msg);
 
-        bot.sendMessage(chatId, "User added");
+        // bot.sendMessage(chatId, "User added");
     }
 
-    if(text === '/keys') {
-        bot.sendMessage(chatId, "Hello", testKeyboard);
-    }
+    // if(text === '/keys') {
+    //     bot.sendMessage(chatId, "Hello", testKeyboard);
+    // }
 
     if(text === '/catalog') {
-        // TODO GET db
-
-        new Promise((resolve, reject) => {
-            db.getEntryList(resolve, reject, 'products');
-        }).then( (res) => {
-            let userlist = res.map((user, i) => {
-                // let userDate = ext.getDate(new Date(user.date1 * 1000));
-                // return `${i + 1}.   ${user.username},   ${user.first_name},   запуск:  ${userDate}\n`;
-                console.log(user);
-            });
-            // bot.sendMessage(msg.chat.id, "User added");
-        });
-
+        keyboardActivate();
         bot.sendMessage(chatId, "Здесь будет изменяемый текст. Тыкай кнопки", editedKeyboard);
     }
 });

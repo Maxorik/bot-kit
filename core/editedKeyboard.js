@@ -1,18 +1,7 @@
-const fake_db = [
-    {
-        id: 1,
-        text: 'first database row',
-    }, {
-        id: 2,
-        text: 'second database row',
-    }, {
-        id: 3,
-        text: 'third database row',
-    }
-];
+const db = require('./database');
 
-// TODO перенести в глобальную переменную, обнулять при вызове клавиатуры
 let db_row_position = -1;    // позиция дб для каталога
+let database = [];           // массив для полученной БД
 
 // инлайновая клавиатура для каталога, изменяющая текст
 const keyboard = {
@@ -35,15 +24,28 @@ module.exports = {
         reply_markup: JSON.stringify(keyboard)
     },
 
+    // событие при вызове клавиатуры: обновление БД, сброс переменной-позиции каталога
+    keyboardActivate: function () {
+        db_row_position = -1;
+        new Promise((resolve, reject) => {
+            db.getEntryList(resolve, reject, 'products');
+        }).then( (res) => {
+            database = res;
+        });
+    },
+
     getPreviousItem: function(bot, chatId, payload) {
         if(db_row_position !== 0) {
             db_row_position > 0 && db_row_position--;
+            const messageTemplate = `<b>${database[db_row_position].name}</b> \n\n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
             try {
                 bot.editMessageText(
-                    `${fake_db[db_row_position].text}`,
-                    {  chat_id: payload.message.chat.id,
+                    messageTemplate,
+                    {
+                        chat_id: payload.message.chat.id,
                         message_id: payload.message.message_id,
-                        reply_markup: JSON.stringify(keyboard)
+                        reply_markup: JSON.stringify(keyboard),
+                        parse_mode: 'HTML'
                     }
                 );
             } catch (err) {
@@ -59,15 +61,17 @@ module.exports = {
     },
 
     getNextItem: function(bot, chatId, payload) {
-        if(db_row_position < fake_db.length) {
-            (db_row_position < fake_db.length-1) && db_row_position++;
+        if(db_row_position < database.length) {
+            (db_row_position < database.length-1) && db_row_position++;
+            const messageTemplate = `<b>${database[db_row_position].name}</b> \n\n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
             try {
                 bot.editMessageText(
-                    `${fake_db[db_row_position].text}`,
+                    messageTemplate,
                     {
                         chat_id: payload.message.chat.id,
                         message_id: payload.message.message_id,
-                        reply_markup: JSON.stringify(keyboard)
+                        reply_markup: JSON.stringify(keyboard),
+                        parse_mode: 'HTML'
                     }
                 );
             } catch (err) {
