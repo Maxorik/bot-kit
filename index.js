@@ -56,13 +56,13 @@ bot.on('callback_query', (query) => {
 
         // TODO вынести колбэки в отдельные места
         case 'getBack':
-            getPreviousItem(bot, chatId, query)
+            getPreviousItem(bot, query)
             break;
         case 'buyItem':
-            addItemToCart(bot, chatId, query)
+            addItemToCart(bot, query)
             break;
         case 'getForward':
-            getNextItem(bot, chatId, query)
+            getNextItem(bot, query)
             break;
 
         // default:

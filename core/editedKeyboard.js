@@ -19,6 +19,25 @@ const keyboard = {
     ]
 };
 
+// возвращает новую запись из бд в бота
+function getEntry(bot, payload) {
+    const imgurl = `/assets/img/${database[db_row_position].photo}`;
+    const messageTemplate = `<b>${database[db_row_position].name}</b> \n <a href="${imgurl}">&#8205;</a> \n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
+    try {
+        bot.editMessageText(
+            messageTemplate,
+            {
+                chat_id: payload.message.chat.id,
+                message_id: payload.message.message_id,
+                reply_markup: JSON.stringify(keyboard),
+                parse_mode: 'HTML'
+            }
+        );
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 module.exports = {
     editedKeyboard: {
         reply_markup: JSON.stringify(keyboard)
@@ -34,49 +53,22 @@ module.exports = {
         });
     },
 
-    getPreviousItem: function(bot, chatId, payload) {
+    getPreviousItem: function(bot, payload) {
         if(db_row_position !== 0) {
             db_row_position > 0 && db_row_position--;
-            const messageTemplate = `<b>${database[db_row_position].name}</b> \n\n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
-            try {
-                bot.editMessageText(
-                    messageTemplate,
-                    {
-                        chat_id: payload.message.chat.id,
-                        message_id: payload.message.message_id,
-                        reply_markup: JSON.stringify(keyboard),
-                        parse_mode: 'HTML'
-                    }
-                );
-            } catch (err) {
-                console.log(err);
-            }
-
+            getEntry(bot, payload);
         }
     },
 
-    addItemToCart: function(bot, chatId, payload) {
-        bot.editMessageText(chatId,'добавлено в корзину кек но будет подругому');
+    addItemToCart: function(bot, payload) {
+        bot.editMessageText(payload.message.chat.id,'добавлено в корзину кек но будет подругому');
         console.log(payload);
     },
 
-    getNextItem: function(bot, chatId, payload) {
+    getNextItem: function(bot, payload) {
         if(db_row_position < database.length) {
             (db_row_position < database.length-1) && db_row_position++;
-            const messageTemplate = `<b>${database[db_row_position].name}</b> \n\n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
-            try {
-                bot.editMessageText(
-                    messageTemplate,
-                    {
-                        chat_id: payload.message.chat.id,
-                        message_id: payload.message.message_id,
-                        reply_markup: JSON.stringify(keyboard),
-                        parse_mode: 'HTML'
-                    }
-                );
-            } catch (err) {
-                console.log(err);
-            }
+            getEntry(bot, payload);
         }
     }
 }
