@@ -21,8 +21,8 @@ const keyboard = {
 
 // возвращает новую запись из бд в бота
 function getEntry(bot, payload) {
-    const imgurl = `/assets/img/${database[db_row_position].photo}`;
-    const messageTemplate = `<b>${database[db_row_position].name}</b> \n <a href="${imgurl}">&#8205;</a> \n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
+    const imgurl = `${database[db_row_position].photo}`;
+    const messageTemplate = `<b>${database[db_row_position].name}</b> \n <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> \n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
     try {
         bot.editMessageText(
             messageTemplate,
@@ -60,9 +60,11 @@ module.exports = {
         }
     },
 
-    addItemToCart: function(bot, payload) {
-        bot.editMessageText(payload.message.chat.id,'добавлено в корзину кек но будет подругому');
-        console.log(payload);
+    addItemToCart: function(bot, chatId) {
+        console.log(database[db_row_position].product_id);
+        db.updateEntry(bot, chatId, 'orders', 'order', database[db_row_position].product_id);
+
+        // bot.editMessageText(payload.message.chat.id,'добавлено в корзину кек но будет подругому');
     },
 
     getNextItem: function(bot, payload) {

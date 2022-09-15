@@ -2,9 +2,6 @@ const TelegramApi = require('node-telegram-bot-api');
 const token = '5609418234:AAGfhkBszhLwM3TFKE7iCCgvJsZIQx-3O4o';
 const bot = new TelegramApi(token, {polling: true});
 
-// const cron = require('node-cron');
-// const axios = require('axios');
-
 const db = require('./core/database');
 const ext = require('./core/extended');
 const { testKeyboard } = require('./core/keyboard');
@@ -26,11 +23,8 @@ bot.on('message', msg => {
     const text = msg.text;
 
     if(text === '/start' || text === '/start s') {
-        // TODO просто добавить пользователя в дб
         // записываем пользователя в БД
-        // db.addNewUser(msg);
-
-        // bot.sendMessage(chatId, "User added");
+        db.addNewUser(msg);
     }
 
     // if(text === '/keys') {
@@ -59,7 +53,7 @@ bot.on('callback_query', (query) => {
             getPreviousItem(bot, query)
             break;
         case 'buyItem':
-            addItemToCart(bot, query)
+            addItemToCart(bot, chatId)
             break;
         case 'getForward':
             getNextItem(bot, query)

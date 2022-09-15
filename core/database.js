@@ -1,14 +1,35 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./core/users.sqlite3');
 
-// добавить новую запись в бд
-function addNewEntry(payload, tableName, dbKeys) {
+// TODO создать метод для добавления заказа
+
+// добавить нового пользователя в бд
+function addNewUser(payload, tableName, dbKeys) {
+    db.serialize(() => {
+        const entryId = payload.from.id;
+        let sqlGet = `SELECT user_id FROM ${tableName} WHERE user_id = ?`;
+        let sqlInsert = `INSERT INTO ${tableName} (user_id, first_name, username, date1)
+                                VALUES ("${payload.from.id}", "${payload.from.first_name}", "${payload.from.username}", "${payload.date}"`;
+
+        db.get(sqlGet, [entryId], (err, row) => {
+            if(err) {
+                console.log(err)
+            }
+            if (!err && !row) {
+                db.run(sqlInsert);
+            }
+        });
+    });
+    // db.close();
+}
+
+// добавить новый заказ
+function addNewOrder(payload, tableName, dbKeys) {
     db.serialize(() => {
         const entryId = payload.from.id;
         let sqlGet = `SELECT id FROM ${tableName} WHERE id = ?`;
-        let sqlInsert = `INSERT INTO ${tableName} (id, first_name, username, date1, date2, content, schedule)    // TODO keys
-                                 VALUES ("${payload.from.id}", "${payload.from.first_name}", "${payload.from.username}",
-                                         "${payload.date}", "${payload.date}")`;
+        let sqlInsert = `INSERT INTO ${tableName} (id, first_name, username, date1)
+                                VALUES ("${payload.from.id}", "${payload.from.first_name}", "${payload.from.username}", "${payload.date}"`;
 
         db.get(sqlGet, [entryId], (err, row) => {
             if(err) {
@@ -47,4 +68,4 @@ function updateEntry(bot, entryId, tableName, paramName, paramValue) {
     });
 }
 
-module.exports = { addNewEntry, getEntryList, updateEntry }
+module.exports = { addNewUser, getEntryList, updateEntry }
