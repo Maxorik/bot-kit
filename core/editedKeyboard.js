@@ -61,8 +61,7 @@ module.exports = {
     },
 
     addItemToCart: function(bot, chatId) {
-        console.log(database[db_row_position].product_id);
-        db.updateEntry(bot, chatId, 'orders', 'order', database[db_row_position].product_id);
+        db.addNewOrder('orders', database[db_row_position].product_id);
 
         // bot.editMessageText(payload.message.chat.id,'добавлено в корзину кек но будет подругому');
     },
