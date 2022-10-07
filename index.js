@@ -4,8 +4,7 @@ const bot = new TelegramApi(token, {polling: true});
 
 const DB_USERS = require('./core/users/databaseUsersController');
 
-const { editedKeyboard, keyboardActivate, getPreviousItem, addItemToCart, getNextItem } = require('./core/catalog/catalogController')
-
+const { catalogInit, catalogCallbacks } = require('./core/catalog/catalogController')
 
 // базовые команды
 bot.setMyCommands([
@@ -27,26 +26,9 @@ bot.on('message', msg => {
     }
 
     if(text === '/catalog') {
-        keyboardActivate();
-        bot.sendMessage(chatId, "Здесь будет изменяемый текст. Тыкай кнопки", editedKeyboard);  // TODO выдавать первуб позицию каталога
+        catalogInit(bot, chatId);
     }
 });
 
-bot.on('callback_query', (query) => {
-    const chatId = query.message.chat.id;
-    switch (query.data) {
-        // TODO вынести колбэки в отдельные места
-        case 'getBack':
-            getPreviousItem(bot, query)
-            break;
-        case 'buyItem':
-            addItemToCart(bot, chatId)
-            break;
-        case 'getForward':
-            getNextItem(bot, query)
-            break;
-
-        // default:
-        //     break;
-    }
-});
+// TODO перенести в контроллер каталлога (экспорт bot ?)
+bot.on('callback_query', (query) => catalogCallbacks(bot, query));
