@@ -1,9 +1,10 @@
-const db = require('./database');
+const DB_MAIN = require('../db_core/databaseMainController');
+const DB_CATALOG = require('./databaseCatalogController');
 
-let db_row_position = -1;    // позиция дб для каталога
-let database = [];           // массив для полученной БД
+let rowPos = -1;            // позиция дб для каталога
+let database = [];          // массив для полученной БД
 
-// инлайновая клавиатура для каталога, изменяющая текст
+// инлайновая клавиатура для каталога
 const keyboard = {
     inline_keyboard: [
         [{
@@ -21,8 +22,8 @@ const keyboard = {
 
 // возвращает новую запись из бд в бота
 function getEntry(bot, payload) {
-    const imgurl = `${database[db_row_position].photo}`;
-    const messageTemplate = `<b>${database[db_row_position].name}</b> \n <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> \n ${database[db_row_position].description} \n\n <i>Цена: ${database[db_row_position].price}</i>`;
+    const imgurl = `${database[rowPos].photo}`;
+    const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> <a href="${imgurl}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
     try {
         bot.editMessageText(
             messageTemplate,
@@ -45,30 +46,30 @@ module.exports = {
 
     // событие при вызове клавиатуры: обновление БД, сброс переменной-позиции каталога
     keyboardActivate: function () {
-        db_row_position = -1;
+        rowPos = -1;
         new Promise((resolve, reject) => {
-            db.getEntryList(resolve, reject, 'products');
+            DB_MAIN.getEntryList(resolve, reject, 'products');
         }).then( (res) => {
             database = res;
         });
     },
 
     getPreviousItem: function(bot, payload) {
-        if(db_row_position !== 0) {
-            db_row_position > 0 && db_row_position--;
+        if(rowPos !== 0) {
+            rowPos > 0 && rowPos--;
             getEntry(bot, payload);
         }
     },
 
     addItemToCart: function(bot, chatId) {
-        db.addNewOrder('orders', database[db_row_position].product_id);
+        DB_CATALOG.addNewOrder('orders', database[rowPos].product_id);
 
         // bot.editMessageText(payload.message.chat.id,'добавлено в корзину кек но будет подругому');
     },
 
     getNextItem: function(bot, payload) {
-        if(db_row_position < database.length) {
-            (db_row_position < database.length-1) && db_row_position++;
+        if(rowPos < database.length) {
+            (rowPos < database.length-1) && rowPos++;
             getEntry(bot, payload);
         }
     }

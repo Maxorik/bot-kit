@@ -2,11 +2,9 @@ const TelegramApi = require('node-telegram-bot-api');
 const token = '5609418234:AAGfhkBszhLwM3TFKE7iCCgvJsZIQx-3O4o';
 const bot = new TelegramApi(token, {polling: true});
 
-const db = require('./core/database');
-const ext = require('./core/extended');
-const { testKeyboard } = require('./core/keyboard');
+const DB_USERS = require('./core/users/databaseUsersController');
 
-const { editedKeyboard, keyboardActivate, getPreviousItem, addItemToCart, getNextItem } = require('./core/editedKeyboard')
+const { editedKeyboard, keyboardActivate, getPreviousItem, addItemToCart, getNextItem } = require('./core/catalog/catalogController')
 
 
 // базовые команды
@@ -14,7 +12,8 @@ bot.setMyCommands([
     {command: '/start',     description: 'Запуск бота'},
     {command: '/catalog',   description: 'Каталог'},
     {command: '/orders',    description: 'Мои заказы'},
-    {command: '/address',   description: 'Мой адрес'}
+    {command: '/address',   description: 'Мой адрес'},
+    {command: '/about',     description: 'Подробности'}
 ]);
 
 // TODO сделать функции асинхронными
@@ -24,30 +23,18 @@ bot.on('message', msg => {
 
     if(text === '/start' || text === '/start s') {
         // записываем пользователя в БД
-        db.addNewUser(msg);
+        DB_USERS.addNewUser(msg, 'users');
     }
-
-    // if(text === '/keys') {
-    //     bot.sendMessage(chatId, "Hello", testKeyboard);
-    // }
 
     if(text === '/catalog') {
         keyboardActivate();
-        bot.sendMessage(chatId, "Здесь будет изменяемый текст. Тыкай кнопки", editedKeyboard);
+        bot.sendMessage(chatId, "Здесь будет изменяемый текст. Тыкай кнопки", editedKeyboard);  // TODO выдавать первуб позицию каталога
     }
 });
 
 bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
     switch (query.data) {
-        case 'setFoo':
-            updateDataBase(bot, chatId, 'foo');
-            break;
-
-        case 'setBar':
-            updateDataBase(bot, chatId, 'bar');
-            break;
-
         // TODO вынести колбэки в отдельные места
         case 'getBack':
             getPreviousItem(bot, query)
