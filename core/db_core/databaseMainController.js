@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('../store.sqlite3');
+// const db = new sqlite3.Database('../store.sqlite3');
+const db = new sqlite3.Database('D:/projects/bot_kit/core/store.sqlite3');
 
 // получить список записей таблицы
 function getEntryList(resolve, reject, tableName) {

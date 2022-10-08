@@ -4,7 +4,8 @@ const bot = new TelegramApi(token, {polling: true});
 
 const DB_USERS = require('./core/users/databaseUsersController');
 
-const { catalogInit, catalogCallbacks } = require('./core/catalog/catalogController')
+const { catalogInit } = require('./core/catalog/catalogController')
+const { ordersInit } = require('./core/orders/ordersController')
 
 // базовые команды
 bot.setMyCommands([
@@ -28,7 +29,8 @@ bot.on('message', msg => {
     if(text === '/catalog') {
         catalogInit(bot, chatId);
     }
-});
 
-// TODO перенести в контроллер каталлога (экспорт bot ?)
-bot.on('callback_query', (query) => catalogCallbacks(bot, query));
+    if(text === '/orders') {
+        ordersInit(bot, chatId);
+    }
+});
