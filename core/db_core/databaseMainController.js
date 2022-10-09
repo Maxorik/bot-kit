@@ -14,6 +14,18 @@ function getEntryList(resolve, reject, tableName) {
     });
 }
 
+// получить список записей таблицы с определенным параметром (id напр.)
+function getEntryParamList(resolve, reject, tableName, param, paramValue) {
+    db.serialize(() => {
+        let recordsList = [];
+        db.each(`SELECT * FROM ${tableName} WHERE ${param} = ${paramValue}`, (err, row) => {
+            recordsList.push(row);
+        }, () => {
+            resolve(recordsList);
+        });
+    });
+}
+
 // обновить запись
 function updateEntry(bot, entryId, tableName, paramName, paramValue) {
     db.serialize(() => {
@@ -21,9 +33,9 @@ function updateEntry(bot, entryId, tableName, paramName, paramValue) {
 
         // TODO возвращать разное в зав-и от paramName
         db.run(sqlUpdate, (err, row) => {
-            err ? console.log(err) : bot.sendMessage(entryId, `Тип контента изменен`);  // TODO изменить резолв
+            err ? console.log(err) : bot.sendMessage(entryId, `Тип контента изменен`);  // TODO присылать колбэк?
         });
     });
 }
 
-module.exports = { getEntryList, updateEntry }
+module.exports = { getEntryList, getEntryParamList, updateEntry }

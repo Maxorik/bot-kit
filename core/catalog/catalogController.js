@@ -83,6 +83,13 @@ function addItemToCart(bot, chatId) {
 
     const successText = `В корзину было добавлено: ${database[rowPos].name}.\n\nВы можете перейти <b>в корзину</b> для оформления заказа, <b>отменить</b> этот заказ, либо продолжить просматривать каталог и добавить что-то еще. `;
 
+    // проверяем, был ли уже заказан этот-же товар
+    new Promise((resolve, reject) => {
+        DB_MAIN.getEntryParamList(resolve, reject, 'products', );
+    }).then( (res) => {
+
+    })
+
     DB_ORDERS.addNewOrder(orderParams, 'orders');
 
     bot.sendMessage(chatId, successText, {

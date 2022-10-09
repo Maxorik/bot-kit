@@ -27,7 +27,7 @@ function getOrdersList(bot, chatId) {
 module.exports = {
     ordersInit: function (bot, chatId) {
         new Promise((resolve, reject) => {
-            DB_MAIN.getEntryList(resolve, reject, 'orders');
+            DB_MAIN.getEntryParamList(resolve, reject, 'orders', 'user', chatId);
         }).then( (res) => {
             database = res;
             getOrdersList(bot, chatId);
