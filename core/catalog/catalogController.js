@@ -85,12 +85,17 @@ function addItemToCart(bot, chatId) {
 
     // проверяем, был ли уже заказан этот-же товар
     new Promise((resolve, reject) => {
-        DB_MAIN.getEntryParamList(resolve, reject, 'products', );
+        const orderParams = {
+          'user':  chatId,
+          'product': database[rowPos].product_id
+        };
+        DB_MAIN.getEntryManyParamsList(resolve, reject, 'orders', orderParams);
     }).then( (res) => {
-
+        // if(res.length)
+        console.log(res);
     })
 
-    DB_ORDERS.addNewOrder(orderParams, 'orders');
+    DB_ORDERS.addNewOrder(orderParams, 'orders', chatId);
 
     bot.sendMessage(chatId, successText, {
         reply_markup: JSON.stringify(keyboardOrder),

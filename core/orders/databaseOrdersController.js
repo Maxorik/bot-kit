@@ -1,8 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
-// const db = new sqlite3.Database('../store.sqlite3');
-const db = new sqlite3.Database('D:/projects/bot_kit/core/store.sqlite3');
+const db = new sqlite3.Database('../store.sqlite3');
+// const db = new sqlite3.Database('D:/projects/bot_kit/core/store.sqlite3');
 
-// TODO если id заказа одинаковые, увеличивать кол-во
 // добавить заказ пользователю
 function addNewOrder(payload, tableName) {
     db.serialize(() => {
