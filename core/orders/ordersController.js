@@ -18,8 +18,10 @@ function getOrdersList(bot, chatId) {
 
     if(database.length > 0) {
         database.forEach((order, i) => {
+            const count = order.count > 1 ? ` (${order.count} шт.)` : '';
+
             // TODO кнопка УДАЛИТЬ
-            ordersTemplate += `${i+1}. ${order.name}, цена: <b>${order.price}</b>, <a href="/delete ${order.order_id}">УДАЛИТЬ</a> \n`
+            ordersTemplate += `${i+1}. ${order.name}${count}, цена: <b>${order.price * +order.count}</b>, <a href="/delete ${order.order_id}">УДАЛИТЬ</a> \n`
         })
         messageParams.reply_markup = JSON.stringify(keyboardOrders);
     } else {

@@ -1,6 +1,6 @@
 const DB_MAIN = require('../db_core/databaseMainController');
 const DB_ORDERS = require('../orders/databaseOrdersController');
-const { ordersInit } = require('../orders/ordersController')
+const { ordersInit } = require('../orders/ordersController');
 
 let rowPos = 0;             // позиция дб для каталога
 let database = [];          // массив для полученной БД
@@ -78,7 +78,7 @@ function addItemToCart(bot, chatId) {
         "user":     chatId,
         "price":    database[rowPos].price,
         "name":     database[rowPos].name,
-        "count":    1                               // TODO если позиция уже есть, не добавлять заказ, а инкрементировать count
+        "count":    '1'                               // TODO если позиция уже есть, не добавлять заказ, а инкрементировать count
     };
 
     const successText = `В корзину было добавлено: ${database[rowPos].name}.\n\nВы можете перейти <b>в корзину</b> для оформления заказа, <b>отменить</b> этот заказ, либо продолжить просматривать каталог и добавить что-то еще. `;
@@ -91,11 +91,12 @@ function addItemToCart(bot, chatId) {
         };
         DB_MAIN.getEntryManyParamsList(resolve, reject, 'orders', orderParams);
     }).then( (res) => {
-        // if(res.length)
-        console.log(res);
+        if(res && res.length > 0) {
+            DB_MAIN.updateEntry('order_id', res[0].order_id, 'orders', 'count', +res[0].count+1);
+        } else {
+            DB_ORDERS.addNewOrder(orderParams, 'orders', chatId);
+        }
     })
-
-    DB_ORDERS.addNewOrder(orderParams, 'orders', chatId);
 
     bot.sendMessage(chatId, successText, {
         reply_markup: JSON.stringify(keyboardOrder),
@@ -122,6 +123,12 @@ module.exports = {
             DB_MAIN.getEntryList(resolve, reject, 'products');
         }).then( (res) => {
             database = res;
+            const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${database[rowPos].photo}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
+
+            bot.sendMessage(chatId, messageTemplate, {
+                reply_markup: JSON.stringify(keyboardCatalog),
+                parse_mode: 'HTML'
+            });
 
             bot.on('callback_query', (query) => {
                 const chatId = query.message.chat.id;
@@ -137,12 +144,6 @@ module.exports = {
                         break;
                 }
             });
-
-            const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${database[rowPos].photo}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
-            bot.sendMessage(chatId, messageTemplate, {
-                reply_markup: JSON.stringify(keyboardCatalog),
-                parse_mode: 'HTML'
-            })
         });
     }
 }

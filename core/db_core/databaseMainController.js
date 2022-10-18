@@ -31,7 +31,7 @@ function getEntryParamList(resolve, reject, tableName, param, paramValue) {
 function getEntryManyParamsList(resolve, reject, tableName, params) {
     let paramString = '';
     for(const property in params) {
-        paramString += ` AND ${property} = ${params[property]}`;
+        paramString += ` AND ${property} = '${params[property]}'`;
     }
     paramString = paramString.substring(5); // убираем первую _AND_
 
@@ -47,9 +47,9 @@ function getEntryManyParamsList(resolve, reject, tableName, params) {
 
 // обновить запись
 // TODO добавить колбэк в параметры (?)
-function updateEntry(entryId, tableName, paramName, paramValue) {
+function updateEntry(primaryKey, entryId, tableName, paramName, paramValue) {
     db.serialize(() => {
-        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE id = ${entryId}`;
+        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE ${primaryKey} = ${entryId}`;
 
         db.run(sqlUpdate);
     });
