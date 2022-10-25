@@ -46,8 +46,8 @@ function getEntryManyParamsList(resolve, reject, tableName, params) {
 }
 
 // обновить запись
-// TODO добавить колбэк в параметры (?)
-function updateEntry(primaryKey, entryId, tableName, paramName, paramValue) {
+// TODO добавить колбэк в параметры (?) - Реализовать resolve, reject
+function updateEntry(primaryKey, entryId, tableName, paramName, paramValue, resolve, reject) {
     db.serialize(() => {
         let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE ${primaryKey} = ${entryId}`;
 
@@ -55,4 +55,15 @@ function updateEntry(primaryKey, entryId, tableName, paramName, paramValue) {
     });
 }
 
-module.exports = { getEntryList, getEntryParamList, getEntryManyParamsList, updateEntry }
+// удалить запись с id из таблицы
+function deleteEntry(entryId, tableName, idParam, resolve, reject) {
+    db.serialize(() => {
+        let sqlDelete = `DELETE FROM ${tableName} WHERE ${idParam} = ${entryId}`;
+
+        db.run(sqlDelete, () => {
+            resolve();
+        });
+    });
+}
+
+module.exports = { getEntryList, getEntryParamList, getEntryManyParamsList, updateEntry, deleteEntry }
