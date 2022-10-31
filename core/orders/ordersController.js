@@ -1,5 +1,6 @@
 const DB_MAIN = require("../db_core/databaseMainController");
 let database = [];
+let wasInit = false;
 
 const keyboardOrders = {
     inline_keyboard: [
@@ -15,6 +16,16 @@ function getOrdersList(bot, chatId) {
     let ordersTemplate = '';
     let messageParams = {
         parse_mode: 'HTML'
+    }
+
+    // сброс клавиатуры к исходному состоянию
+    if(keyboardOrders.inline_keyboard.length > 1) {
+        keyboardOrders.inline_keyboard = [
+            [{
+                text: 'Оплатить',
+                callback_data: 'payOrder'
+            }]
+        ]
     }
 
     if(database.length > 0) {
@@ -43,13 +54,9 @@ function deleteItem(bot, chatId, id) {
     try {
         new Promise((resolve, reject) => {
             DB_MAIN.deleteEntry(orderId, 'orders', 'order_id', resolve, reject);
-        }).then( () => {
-            new Promise((resolve, reject) => {
-                DB_MAIN.getEntryParamList(resolve, reject, 'orders', 'user', chatId);
-            }).then((res) => {
-                database = res;
-                getOrdersList(bot, chatId);
-            });
+        }).then( (res) => {
+            database = res;
+            getOrdersList(bot, chatId);
         });
     } catch (e) { console.log(e) }
 }
@@ -62,12 +69,14 @@ module.exports = {
             database = res;
             getOrdersList(bot, chatId);
         });
-        bot.on('callback_query', (query) => {
+
+        !wasInit && bot.on('callback_query', (query) => {
+            wasInit = true;
             switch (query.data) {
                 case 'payOrder':
                     // ordersInit(bot, chatId);
                     break;
-                case String(query.data.match(/cancelOrder\d+/)):
+                case String(query.data.match(/cancelOrder\d+/)):        // в колбэк приходит айди удаляемого заказа
                     deleteItem(bot, chatId, query.data);
                     break;
             }

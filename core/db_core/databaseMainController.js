@@ -58,12 +58,18 @@ function updateEntry(primaryKey, entryId, tableName, paramName, paramValue, reso
 // удалить запись с id из таблицы
 function deleteEntry(entryId, tableName, idParam, resolve, reject) {
     db.serialize(() => {
-        let sqlDelete = `DELETE FROM ${tableName} WHERE ${idParam} = ${entryId}`;
+        let sqlDelete = `DELETE
+                         FROM ${tableName}
+                         WHERE ${idParam} = ${entryId}`;
 
         db.run(sqlDelete, () => {
-            resolve();
+            new Promise((resolve_get, reject_get) => {
+                getEntryList(resolve_get, reject_get, tableName);
+            }).then((res) => {
+                resolve(res);
+            });
         });
-    });
+    })
 }
 
 module.exports = { getEntryList, getEntryParamList, getEntryManyParamsList, updateEntry, deleteEntry }

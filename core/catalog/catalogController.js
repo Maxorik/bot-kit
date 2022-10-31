@@ -4,6 +4,7 @@ const { ordersInit } = require('../orders/ordersController');
 
 let rowPos = 0;             // позиция дб для каталога
 let database = [];          // массив для полученной БД
+let wasInit = false;        // была ли уже инициализация в текущей сессии
 
 // инлайновая клавиатура для каталога
 const keyboardCatalog = {
@@ -17,6 +18,30 @@ const keyboardCatalog = {
         }, {
             text: 'Вперед',
             callback_data: 'getForward'
+        }]
+    ]
+};
+
+const keyboardCatalogFirst = {
+    inline_keyboard: [
+        [{
+            text: 'Купить',
+            callback_data: 'buyItem'
+        }, {
+            text: 'Вперед',
+            callback_data: 'getForward'
+        }]
+    ]
+};
+
+const keyboardCatalogLast = {
+    inline_keyboard: [
+        [{
+            text: 'Назад',
+            callback_data: 'getBack'
+        }, {
+            text: 'Купить',
+            callback_data: 'buyItem'
         }]
     ]
 };
@@ -36,6 +61,7 @@ const keyboardOrder = {
 
 // возвращает новую запись из бд в бота
 function getEntry(bot, payload) {
+    const keyboard = rowPos === 0 ? keyboardCatalogFirst : rowPos === database.length-1 ? keyboardCatalogLast : keyboardCatalog;
     const imgUrl = `${database[rowPos].photo}`;
     const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${imgUrl}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
     try {
@@ -44,7 +70,7 @@ function getEntry(bot, payload) {
             {
                 chat_id: payload.message.chat.id,
                 message_id: payload.message.message_id,
-                reply_markup: JSON.stringify(keyboardCatalog),
+                reply_markup: JSON.stringify(keyboard),
                 parse_mode: 'HTML'
             }
         );
@@ -126,12 +152,13 @@ module.exports = {
             const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${database[rowPos].photo}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
 
             bot.sendMessage(chatId, messageTemplate, {
-                reply_markup: JSON.stringify(keyboardCatalog),
+                reply_markup: JSON.stringify(keyboardCatalogFirst),
                 parse_mode: 'HTML'
             });
 
-            bot.on('callback_query', (query) => {
+            !wasInit && bot.on('callback_query', (query) => {
                 const chatId = query.message.chat.id;
+                wasInit = true;
                 switch (query.data) {
                     case 'getBack':
                         getPreviousItem(bot, query);
