@@ -54,7 +54,7 @@ function deleteItem(bot, chatId, id) {
     try {
         new Promise((resolve, reject) => {
             DB_MAIN.deleteEntry(orderId, 'orders', 'order_id', resolve, reject);
-        }).then( (res) => {
+        }).then(res => {
             database = res;
             getOrdersList(bot, chatId);
         });
@@ -65,7 +65,7 @@ function deleteItem(bot, chatId, id) {
 function checkAddress(bot, chatId) {
     new Promise((resolve, reject) => {
         DB_MAIN.getEntryParamList(resolve, reject, 'users', 'user_id', chatId);
-    }).then((res) => {
+    }).then(res => {
         res[0].address ? payOrder(bot, chatId) : bot.sendMessage(chatId, 'Пожалуйста, укажите ваш адрес, выполнив /address');
     });
 }
@@ -79,12 +79,12 @@ module.exports = {
     ordersInit: function (bot, chatId) {
         new Promise((resolve, reject) => {
             DB_MAIN.getEntryParamList(resolve, reject, 'orders', 'user', chatId);
-        }).then((res) => {
+        }).then(res => {
             database = res;
             getOrdersList(bot, chatId);
         });
 
-        !wasInit && bot.on('callback_query', (query) => {
+        !wasInit && bot.on('callback_query', query => {
             wasInit = true;
             switch (query.data) {
                 case 'payOrder':

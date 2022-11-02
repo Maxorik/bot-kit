@@ -116,7 +116,7 @@ function addItemToCart(bot, chatId) {
           'product': database[rowPos].product_id
         };
         DB_MAIN.getEntryManyParamsList(resolve, reject, 'orders', orderParams);
-    }).then( (res) => {
+    }).then(res => {
         if(res && res.length > 0) {
             DB_MAIN.updateEntry('order_id', res[0].order_id, 'orders', 'count', +res[0].count+1);
         } else {
@@ -129,7 +129,7 @@ function addItemToCart(bot, chatId) {
         parse_mode: 'HTML'
     });
 
-    bot.on('callback_query', (query) => {
+    bot.on('callback_query', query => {
         switch (query.data) {
             case 'goToOrders':
                 ordersInit(bot, chatId);
@@ -147,7 +147,7 @@ module.exports = {
         rowPos = 0;
         new Promise((resolve, reject) => {
             DB_MAIN.getEntryList(resolve, reject, 'products');
-        }).then( (res) => {
+        }).then(res => {
             database = res;
             const messageTemplate = `<b>${database[rowPos].name}</b> \n <a href="${database[rowPos].photo}">&#8205;</a> \n ${database[rowPos].description} \n\n <i>Цена: ${database[rowPos].price}</i>`;
 
@@ -156,7 +156,7 @@ module.exports = {
                 parse_mode: 'HTML'
             });
 
-            !wasInit && bot.on('callback_query', (query) => {
+            !wasInit && bot.on('callback_query', query => {
                 const chatId = query.message.chat.id;
                 wasInit = true;
                 switch (query.data) {
