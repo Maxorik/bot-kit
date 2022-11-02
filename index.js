@@ -9,7 +9,6 @@ const { ordersInit } = require('./core/orders/ordersController')
 
 // базовые команды
 bot.setMyCommands([
-    {command: '/start',     description: 'Запуск бота'},
     {command: '/catalog',   description: 'Каталог'},
     {command: '/orders',    description: 'Мои заказы'},
     {command: '/address',   description: 'Мой адрес'},

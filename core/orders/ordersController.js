@@ -61,6 +61,20 @@ function deleteItem(bot, chatId, id) {
     } catch (e) { console.log(e) }
 }
 
+// проверка, указан ли адрес доставки
+function checkAddress(bot, chatId) {
+    new Promise((resolve, reject) => {
+        DB_MAIN.getEntryParamList(resolve, reject, 'users', 'user_id', chatId);
+    }).then((res) => {
+        res[0].address ? payOrder(bot, chatId) : bot.sendMessage(chatId, 'Пожалуйста, укажите ваш адрес, выполнив /address');
+    });
+}
+
+// вызов платежной формы, смена статуса заказа
+function payOrder(bot, chatId) {
+    console.log('payed');
+}
+
 module.exports = {
     ordersInit: function (bot, chatId) {
         new Promise((resolve, reject) => {
@@ -74,7 +88,7 @@ module.exports = {
             wasInit = true;
             switch (query.data) {
                 case 'payOrder':
-                    // ordersInit(bot, chatId);
+                    checkAddress(bot, chatId, query.data);
                     break;
                 case String(query.data.match(/cancelOrder\d+/)):        // в колбэк приходит айди удаляемого заказа
                     deleteItem(bot, chatId, query.data);
