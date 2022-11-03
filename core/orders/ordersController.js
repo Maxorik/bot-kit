@@ -11,6 +11,7 @@ const keyboardOrders = {
     ]
 };
 
+// TODO добавить поменять проверку адреса, добавить адрес в текст
 // получить список заказов, добавленных в корзину
 function getOrdersList(bot, chatId) {
     let ordersTemplate = '';

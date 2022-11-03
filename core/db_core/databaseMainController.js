@@ -46,12 +46,12 @@ function getEntryManyParamsList(resolve, reject, tableName, params) {
 }
 
 // обновить запись
-// TODO добавить колбэк в параметры (?) - Реализовать resolve, reject
 function updateEntry(primaryKey, entryId, tableName, paramName, paramValue, resolve, reject) {
     db.serialize(() => {
         let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE ${primaryKey} = ${entryId}`;
-
-        db.run(sqlUpdate);
+        db.run(sqlUpdate, (err) => {
+            err ? reject(err) : resolve(err);
+        });
     });
 }
 
