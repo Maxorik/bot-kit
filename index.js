@@ -1,5 +1,5 @@
 const TelegramApi = require('node-telegram-bot-api');
-const token = '5609418234:AAGfhkBszhLwM3TFKE7iCCgvJsZIQx-3O4o';
+const token = '';
 const bot = new TelegramApi(token, {polling: true});
 
 const DB_USERS = require('./core/users/databaseUsersController');
