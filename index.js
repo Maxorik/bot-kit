@@ -20,7 +20,6 @@ bot.setMyCommands([
 bot.on('message', msg => {
     const chatId = msg.chat.id;
     const text = msg.text;
-
     switch (text) {
         case '/start':
         case '/start s':
