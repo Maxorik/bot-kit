@@ -6,10 +6,10 @@ const DB_USERS = require('./core/users/databaseUsersController');
 
 const { catalogInit } = require('./core/catalog/catalogController')
 const { ordersInit } = require('./core/orders/ordersController')
+const { addressInit } = require('./core/address/addressController')
 
 // базовые команды
 bot.setMyCommands([
-    {command: '/start',     description: 'Запуск бота'},
     {command: '/catalog',   description: 'Каталог'},
     {command: '/orders',    description: 'Мои заказы'},
     {command: '/address',   description: 'Мой адрес'},
@@ -21,16 +21,19 @@ bot.on('message', msg => {
     const chatId = msg.chat.id;
     const text = msg.text;
 
-    if(text === '/start' || text === '/start s') {
-        // записываем пользователя в БД
-        DB_USERS.addNewUser(msg, 'users');
-    }
-
-    if(text === '/catalog') {
-        catalogInit(bot, chatId);
-    }
-
-    if(text === '/orders') {
-        ordersInit(bot, chatId);
+    switch (text) {
+        case '/start':
+        case '/start s':
+            DB_USERS.addNewUser(msg, 'users');
+            break;
+        case '/catalog':
+            catalogInit(bot, chatId);
+            break;
+        case '/orders':
+            ordersInit(bot, chatId);
+            break;
+        case '/address':
+            addressInit(bot, chatId);
+            break;
     }
 });

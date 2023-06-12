@@ -31,7 +31,7 @@ function getEntryParamList(resolve, reject, tableName, param, paramValue) {
 function getEntryManyParamsList(resolve, reject, tableName, params) {
     let paramString = '';
     for(const property in params) {
-        paramString += ` AND ${property} = ${params[property]}`;
+        paramString += ` AND ${property} = '${params[property]}'`;
     }
     paramString = paramString.substring(5); // убираем первую _AND_
 
@@ -46,13 +46,30 @@ function getEntryManyParamsList(resolve, reject, tableName, params) {
 }
 
 // обновить запись
-// TODO добавить колбэк в параметры (?)
-function updateEntry(entryId, tableName, paramName, paramValue) {
+function updateEntry(primaryKey, entryId, tableName, paramName, paramValue, resolve, reject) {
     db.serialize(() => {
-        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE id = ${entryId}`;
-
-        db.run(sqlUpdate);
+        let sqlUpdate = `UPDATE ${tableName} SET ${paramName} = "${paramValue}" WHERE ${primaryKey} = ${entryId}`;
+        db.run(sqlUpdate, (err) => {
+            err ? reject(err) : resolve(err);
+        });
     });
 }
 
-module.exports = { getEntryList, getEntryParamList, getEntryManyParamsList, updateEntry }
+// удалить запись с id из таблицы
+function deleteEntry(entryId, tableName, idParam, resolve, reject) {
+    db.serialize(() => {
+        let sqlDelete = `DELETE
+                         FROM ${tableName}
+                         WHERE ${idParam} = ${entryId}`;
+
+        db.run(sqlDelete, () => {
+            new Promise((resolve_get, reject_get) => {
+                getEntryList(resolve_get, reject_get, tableName);
+            }).then((res) => {
+                resolve(res);
+            });
+        });
+    })
+}
+
+module.exports = { getEntryList, getEntryParamList, getEntryManyParamsList, updateEntry, deleteEntry }
